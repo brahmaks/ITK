@@ -31,6 +31,7 @@
 #include "itkMutexLock.h"
 #include "itkThreadSupport.h"
 #include "itkIntTypes.h"
+#include "itkPThreadpool.h"
 
 namespace itk
 {
@@ -143,6 +144,7 @@ public:
     ThreadFunctionType ThreadFunction;
     enum { SUCCESS, ITK_EXCEPTION, ITK_PROCESS_ABORTED_EXCEPTION, STD_EXCEPTION, UNKNOWN } ThreadExitCode;
   };
+  PThreadPool& pthreadPool;
 
 protected:
   MultiThreader();

@@ -18,27 +18,13 @@
 
 #include <iostream>
 #include "itkPThreadpool.h"
-
+#include<stdlib.h>
 
 
 using namespace itk;
 #define ITERATIONS 10
 
-class MyWorkerThread : public WorkerPThread
-{
-public:
-    
-    
-    MyWorkerThread(int myId) : WorkerPThread(myId)//, id(myId)
-    {
-        std::cout << "Starting thread with id " << this->id << "\t address=" << this << std::endl;
-    }
 
-    ~MyWorkerThread()
-    {
-        std::cout << "Thread finished. Id is  " << this->id << "\t address=" << this << std::endl;
-    }
-};
 
 void* execute(void *ptr)
 {
@@ -58,6 +44,7 @@ void* execute(void *ptr)
    
 }
 
+
 int itkPthreadPoolTest(int argc, char *argv[])
 {
 
@@ -67,28 +54,21 @@ int itkPthreadPoolTest(int argc, char *argv[])
 	    numThreadsInThreadPool = atoi(argv[1]);
 	}
 	std::cout<<"Testing itkPthreadPool. Num of threads :"<<numThreadsInThreadPool<<std::endl;
-        PThreadPool* myPool = PThreadPool::New(numThreadsInThreadPool);  
-        myPool->InitializeThreads();
+        PThreadPool& myPool = PThreadPool::New(numThreadsInThreadPool);  
+
 
         time_t t1=time(NULL);
 
         //assign work
         for(unsigned int i=0; i<ITERATIONS; i++) {
-            MyWorkerThread* myThread = new MyWorkerThread(i);
-	    myThread->threadArgs.otherArgs = (void *) i;
-	    myThread->ThreadFunction = (&execute);
-            std::cout << "Thread id[" << myThread->id << "] " << std::endl;
-            myPool->AssignWork(myThread, true);
-	    /*while(myThread->ActiveFlag!=0){	
-                std::cout<<std::endl<<"Waiting for myThread. id is "<<i;
-		sleep(2);
-	    }
-	    delete myThread;
-	    myThread = NULL;
-*/
+            WorkerPThread myThread;
+	    myThread.threadArgs.otherArgs = (void *) i;
+	    myThread.ThreadFunction = (&execute);
+            std::cout << "Thread id[" << myThread.id << "] " << std::endl;
+            int id = myPool.AssignWork(myThread);
 
-	    WorkerPThread *workerPThread = (MyWorkerThread *)myThread;
-            myPool->WaitForThread(&workerPThread);
+            myPool.WaitForThread(id);
+
         }
 /*
         //assigining small work again - looping only twice
@@ -113,25 +93,25 @@ int itkPthreadPoolTest(int argc, char *argv[])
 
        
 	std::cout<<"All threads finished"<<std::endl;
-        myPool->DestroyPool(2);
+        //myPool.DestroyPool(2);
 
         time_t t2=time(NULL);
         std::cout << t2-t1 << " seconds elapsed\n" << std::endl;
-        delete myPool;
+        PThreadPool::deleteInstance();
     }
     catch (const std::exception& ex) {
         std::cout<<ex.what()<<std::endl;
-        return EXIT_FAILURE;
+        return -1;
     } 
     catch (const std::string& ex) {
         std::cout<<ex<<std::endl;
-        return EXIT_FAILURE;
+        return -1;
     } 
     catch (...) {
         std::cout<<"Uncaught Exception occured"<<std::endl;
-        return EXIT_FAILURE;
+        return -1;
     }
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 

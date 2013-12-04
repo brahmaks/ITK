@@ -28,7 +28,7 @@
 #include "itkMultiThreader.h"
 #include "itkNumericTraits.h"
 #include <iostream>
-
+#include "itkPThreadpool.h"
 
 #if defined(ITK_USE_PTHREADS)
 #include "itkMultiThreaderPThreads.cxx"
@@ -41,6 +41,8 @@
 
 namespace itk
 {
+
+
 // Initialize static member that controls global maximum number of threads.
 ThreadIdType MultiThreader:: m_GlobalMaximumNumberOfThreads = ITK_MAX_THREADS;
 
@@ -182,7 +184,7 @@ ThreadIdType MultiThreader::GetGlobalDefaultNumberOfThreads()
 // Constructor. Default all the methods to NULL. Since the
 // ThreadInfoArray is static, the ThreadIDs can be initialized here
 // and will not change.
-MultiThreader::MultiThreader()
+MultiThreader::MultiThreader() : pthreadPool(PThreadPool::New(GetGlobalDefaultNumberOfThreads()*2))
 {
   for ( ThreadIdType i = 0; i < ITK_MAX_THREADS; i++ )
     {
@@ -201,10 +203,15 @@ MultiThreader::MultiThreader()
   m_SingleMethod = 0;
   m_SingleData = 0;
   m_NumberOfThreads = this->GetGlobalDefaultNumberOfThreads();
+  
+    
+
 }
 
 MultiThreader::~MultiThreader()
-{}
+{
+   // PThreadPool::deleteInstance();
+}
 
 // Set the user defined method that will be run on NumberOfThreads threads
 // when SingleMethodExecute is called.

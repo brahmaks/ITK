@@ -217,11 +217,20 @@ MultiThreader
 ::WaitForSingleMethodThread(ThreadProcessIDType threadHandle)
 {
   // Using POSIX threads
-  if ( pthread_join(threadHandle, 0) )
+ /* if ( pthread_join(threadHandle, 0) )
     {
     itkExceptionMacro(<< "Unable to join thread.");
     }
+
+*/
+//We are now using thread pool
+    pthread_t threadId = threadHandle;
+    std::cout<<std::endl<<"For wait : threadid :"<<threadId<<std::endl;
+    pthreadPool.WaitForThread(threadId);
+
+
 }
+
 
 ThreadProcessIDType
 MultiThreader
@@ -229,22 +238,39 @@ MultiThreader
 {
   // Using POSIX threads
   pthread_attr_t attr;
-  pthread_t      threadHandle;
+//  pthread_t      threadHandle;
 
   pthread_attr_init(&attr);
 #if !defined( __CYGWIN__ )
   pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 #endif
 
+  /*
+  //Using thread pool to spawn threadsl
+
   int threadError;
   threadError =
     pthread_create( &threadHandle, &attr, reinterpret_cast< c_void_cast >( this->SingleMethodProxy ),
                     reinterpret_cast< void * >( threadInfo ) );
+  */
+  //int threadId = (int)threadInfo->ThreadID;
+
+  WorkerPThread myThread;
+  myThread.ThreadFunction =  reinterpret_cast< c_void_cast >(this->SingleMethodProxy) ;
+  myThread.threadArgs.otherArgs = (void *) threadInfo;
+  int id = pthreadPool.AssignWork(myThread);
+  
+/*
+ //thread pool will handle errors
   if ( threadError != 0 )
     {
     itkExceptionMacro(<< "Unable to create a thread.  pthread_create() returned "
                       << threadError);
     }
-  return threadHandle;
+
+*/
+  std::cout<<std::endl<<"Returning thread id :"<<id;
+  return (pthread_t)id;
+
 }
 } // end namespace itk

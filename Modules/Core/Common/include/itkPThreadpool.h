@@ -7,72 +7,76 @@
 #include <iostream>
 #include <vector>
 
-#include "itkLightObject.h"
-
-
-//using namespace std;
 
 namespace itk {
 
 
 class WorkerPThread {
 public:
-    struct ThreadArgs{
-        
-	void *otherArgs;
+    struct ThreadArgs {
+
+        void *otherArgs;
     };
     int id;
+    bool assigned;
+    bool executed;
     pthread_t ptid;
     void *UserData; //any data user wants the function to use
-    int ActiveFlag; 
+
     void* (*ThreadFunction)(void *ptr);
     pthread_t threadHandle;
     ThreadArgs threadArgs;
-    WorkerPThread(int myId) : id(myId), ActiveFlag(1) {}
-    virtual ~WorkerPThread() {}
+    WorkerPThread() : assigned(false) {
+
+        std::cout << "Starting thread \t address=" << this << std::endl;
+    }
+    ~WorkerPThread() {
+        std::cout <<std::endl<< "Thread finished. pid is  " << ptid << "\t address=" << this << std::endl;
+    }
+
+
 };
 
-class PThreadPool// : public LightObject
+class PThreadPool
 {
 public:
 
-    static PThreadPool * New();
-    static PThreadPool * New(int maxThreads);
-    
-    void Delete() { delete this; }
 
-    virtual ~PThreadPool();
-
+    static PThreadPool & New();
+    static PThreadPool & New(int maxThreads);
+    static void deleteInstance();
     void DestroyPool(int maxPollSecs);
-    bool AssignWork(WorkerPThread *worker, bool wait);
-    bool FetchWork(WorkerPThread **worker);
+    int AssignWork(WorkerPThread worker);
+    WorkerPThread FetchWork();
     void InitializeThreads();
-    WorkerPThread* getWorker(pthread_t *id);
     static void *ThreadExecute(void *param);
     static pthread_mutex_t mutexSync;
+    static pthread_mutex_t activeThreadMutex;
     static pthread_mutex_t mutexWorkCompletion;
-    
-    //ThreadArgs **threadArgs;// = new ThreadArgs;
     pthread_t *threadHandles;
-   
-    bool WaitForThread(WorkerPThread **workerThread);
+    bool WaitForThread(int id);
 
 
 
 private:
+    bool destroy;
+    static PThreadPool* pThreadPoolInstance;
+    static bool instanceFlag;
+    PThreadPool(PThreadPool const&);             // copy constructor is private
+    PThreadPool& operator=(PThreadPool const&);  // assignment operator is private
     PThreadPool();
+    ~PThreadPool();
     PThreadPool(int maxThreadsTemp);
+    void removeActiveId(int id);
     int maxThreads;
     pthread_cond_t  condCrit;
-    sem_t availableWork;
-    sem_t availableThreads;
-    std::vector<WorkerPThread *> workerQueue;
-    int topIndex;
-    int bottomIndex;
+    sem_t workAvailable;
+    std::vector<WorkerPThread> workerQueue;
+    std::vector<int> activeThreadIds;
     int incompleteWork;
     int queueSize;
-    bool waitFlag;
- 
+    int idCounter;
+
 };
 
 
