@@ -184,7 +184,7 @@ ThreadIdType MultiThreader::GetGlobalDefaultNumberOfThreads()
 // Constructor. Default all the methods to NULL. Since the
 // ThreadInfoArray is static, the ThreadIDs can be initialized here
 // and will not change.
-MultiThreader::MultiThreader() : pthreadPool(PThreadPool::New(GetGlobalDefaultNumberOfThreads()*2))
+MultiThreader::MultiThreader() : Pthreadpool(PThreadPool::GetPoolInstance(GetGlobalDefaultNumberOfThreads()*2))
 {
   for ( ThreadIdType i = 0; i < ITK_MAX_THREADS; i++ )
     {

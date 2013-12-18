@@ -226,7 +226,7 @@ MultiThreader
 //We are now using thread pool
     pthread_t threadId = threadHandle;
     std::cout<<std::endl<<"For wait : threadid :"<<threadId<<std::endl;
-    pthreadPool.WaitForThread(threadId);
+    Pthreadpool.WaitForThread(threadId);
 
 
 }
@@ -255,10 +255,10 @@ MultiThreader
   */
   //int threadId = (int)threadInfo->ThreadID;
 
-  WorkerPThread myThread;
-  myThread.ThreadFunction =  reinterpret_cast< c_void_cast >(this->SingleMethodProxy) ;
-  myThread.threadArgs.otherArgs = (void *) threadInfo;
-  int id = pthreadPool.AssignWork(myThread);
+  PThreadJob pthreadJob;
+  pthreadJob.ThreadFunction =  reinterpret_cast< c_void_cast >(this->SingleMethodProxy) ;
+  pthreadJob.ThreadArgs.otherArgs = (void *) threadInfo;
+  int id = Pthreadpool.AssignWork(pthreadJob);
   
 /*
  //thread pool will handle errors

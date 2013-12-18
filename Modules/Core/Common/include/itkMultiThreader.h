@@ -144,7 +144,7 @@ public:
     ThreadFunctionType ThreadFunction;
     enum { SUCCESS, ITK_EXCEPTION, ITK_PROCESS_ABORTED_EXCEPTION, STD_EXCEPTION, UNKNOWN } ThreadExitCode;
   };
-  PThreadPool& pthreadPool;
+  PThreadPool& Pthreadpool;
 
 protected:
   MultiThreader();
