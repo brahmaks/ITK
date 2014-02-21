@@ -17,6 +17,7 @@
  *=========================================================================*/
 #ifndef __itkPThreadJob_h__
 #define __itkPThreadJob_h__
+#ifdef __unix__
 #include <pthread.h>
 #include <iostream>
 #include "itkThreadPoolDebug.h"
@@ -59,4 +60,5 @@ public:
 
 } // End namespace itk
 
+#endif
 #endif // __itkPThreadJob_h__
