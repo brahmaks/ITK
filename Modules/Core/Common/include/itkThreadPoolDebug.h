@@ -21,8 +21,6 @@
 #ifndef __ThreadPoolDebug_h
 #define __ThreadPoolDebug_h
 
-
-
 #if 1
 #define THREAD_DIAGNOSTIC_PRINT( themessage )
 #else

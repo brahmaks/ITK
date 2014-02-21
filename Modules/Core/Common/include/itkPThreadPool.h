@@ -27,8 +27,7 @@
 #include "itkPThreadJob.h"
 #include "itkObject.h"
 #include "itkObjectFactory.h"
-#include"itkThreadPoolDebug.h"
-
+#include "itkThreadPoolDebug.h"
 
 namespace itk
 {
@@ -38,7 +37,7 @@ class ITKCommon_EXPORT ThreadPool : public Object
 public:
 
   /** Standard class typedefs. */
-  typedef ThreadPool              Self;
+  typedef ThreadPool               Self;
   typedef Object                   Superclass;
   typedef SmartPointer<Self>       Pointer;
   typedef SmartPointer<const Self> ConstPointer;
@@ -73,22 +72,23 @@ private:
   static bool InstanceFlag;
   ThreadPool(ThreadPool const &);              // copy constructor is private
   ThreadPool & operator=(ThreadPool const &);  // assignment operator is
-                                                 // private
+
+  // private
 
   void RemoveActiveId(int id);
 
-  int                     MaxThreads;
-  sem_t                   WorkAvailable;
+  int                    MaxThreads;
+  sem_t                  WorkAvailable;
   std::vector<ThreadJob> WorkerQueue;
-  std::vector<int>        ActiveThreadIds;
-  int                     IncompleteWork;
-  int                     QueueSize;
-  int                     IdCounter;
-  bool                    ExceptionOccured;
-  static pthread_mutex_t  MutexSync;
-  static pthread_mutex_t  ActiveThreadMutex;
-  static pthread_mutex_t  MutexWorkCompletion;
-  pthread_t *             ThreadHandles;
+  std::vector<int>       ActiveThreadIds;
+  int                    IncompleteWork;
+  int                    QueueSize;
+  int                    IdCounter;
+  bool                   ExceptionOccured;
+  static pthread_mutex_t MutexSync;
+  static pthread_mutex_t ActiveThreadMutex;
+  static pthread_mutex_t MutexWorkCompletion;
+  pthread_t *            ThreadHandles;
   ThreadJob FetchWork();
 
   static void * ThreadExecute(void *param);

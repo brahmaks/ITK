@@ -20,8 +20,8 @@
 #define __itkWinJob_h
 #include <iostream>
 
-#include"itkThreadPoolDebug.h"
- 
+#include "itkThreadPoolDebug.h"
+
 namespace itk
 {
 
@@ -33,27 +33,25 @@ public:
 
     void *otherArgs;
     };
-  int       Id;
-  bool      Assigned;
-  bool      Executed;
-  int       Ptid;
-  void *    UserData; // any data user wants the function to use
+  int    Id;
+  bool   Assigned;
+  bool   Executed;
+  int    Ptid;
+  void * UserData;    // any data user wants the function to use
 
- // void *     (*ThreadFunction)(void *ptr);
-  //void * ( __stdcall *ThreadFunction )( void *ptr );
+  // void *     (*ThreadFunction)(void *ptr);
+  // void * ( __stdcall *ThreadFunction )( void *ptr );
   unsigned int ( __stdcall *ThreadFunction )( void * ptr );
-  
+
   ThreadArgs ThreadArgs;
   WinJob() : Assigned(false)
   {
-
-    THREAD_DIAGNOSTIC_PRINT(  "Starting thread \t address=" << this << std::endl );
-    std::cout<<  "Starting thread \t address=" << this << std::endl ;
+    THREAD_DIAGNOSTIC_PRINT(  "Starting thread \t address=" << this << std::endl );  
   }
 
   ~WinJob()
   {
-    THREAD_DIAGNOSTIC_PRINT( std::endl<< "Thread finished. pid is  " << Ptid << "\t address=" << this << std::endl );
+    THREAD_DIAGNOSTIC_PRINT( std::endl << "Thread finished. pid is  " << Ptid << "\t address=" << this << std::endl );
   }
 
 };

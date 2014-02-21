@@ -19,8 +19,7 @@
 #define __itkPThreadJob_h__
 #include <pthread.h>
 #include <iostream>
-#include"itkThreadPoolDebug.h"
-
+#include "itkThreadPoolDebug.h"
 
 namespace itk
 {
@@ -29,33 +28,34 @@ namespace itk
 */
 
 class ThreadJob
-  {
+{
 public:
   struct ThreadArgs
     {
     void *otherArgs;
     };
-  int Id;
-  bool Assigned;
-  bool Executed;
+  int       Id;
+  bool      Assigned;
+  bool      Executed;
   pthread_t Ptid;
-  void *UserData; //any data user wants the function to use
+  void *    UserData; // any data user wants the function to use
 
-  void* (*ThreadFunction)(void *ptr);
-  pthread_t ThreadHandle;
+  void *     (*ThreadFunction)(void *ptr);
+  pthread_t  ThreadHandle;
   ThreadArgs ThreadArgs;
 
   ThreadJob() :
-     Assigned(false)
+    Assigned(false)
   {
-  THREAD_DIAGNOSTIC_PRINT(  "Starting thread \t address=" << this << std::endl );
+    THREAD_DIAGNOSTIC_PRINT(  "Starting thread \t address=" << this << std::endl );
   }
-  ~ThreadJob()
-    {
-    THREAD_DIAGNOSTIC_PRINT( std::endl<< "Thread finished. pid is  " << Ptid << "\t address=" << this << std::endl );
-    }
 
-  };
+  ~ThreadJob()
+  {
+    THREAD_DIAGNOSTIC_PRINT( std::endl << "Thread finished. pid is  " << Ptid << "\t address=" << this << std::endl );
+  }
+
+};
 
 } // End namespace itk
 

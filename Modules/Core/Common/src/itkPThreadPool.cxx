@@ -27,7 +27,7 @@ pthread_mutex_t ThreadPool:: MutexWorkCompletion = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t ThreadPool:: ActiveThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 
 ThreadPool * ThreadPool:: ThreadPoolInstance = 0;
-bool ThreadPool::          InstanceFlag = false;
+bool ThreadPool::         InstanceFlag = false;
 
 ThreadPool & ThreadPool::GetPoolInstance()
 {
@@ -77,13 +77,13 @@ void ThreadPool::InitializeThreads(int maximumThreads)
       rc = pthread_create(&ThreadHandles[i], NULL, &ThreadPool::ThreadExecute, (void *)this );
       if( rc )
         {
-        THREAD_DIAGNOSTIC_PRINT ( "ERROR; return code from pthread_create() is " << rc << std::endl );
+        THREAD_DIAGNOSTIC_PRINT( "ERROR; return code from pthread_create() is " << rc << std::endl );
         throw "Cannot create thread. Error in return code from pthread_create()";
         }
       THREAD_DIAGNOSTIC_PRINT(  "Thread createdd with ptid :" << ThreadHandles[i] << std::endl );
       }
     }
-  catch( std::exception& /* NOT_USED e */ )
+  catch( std::exception & /* NOT_USED e */ )
     {
     ExceptionOccured = true;
     THREAD_DIAGNOSTIC_PRINT(  std::endl << "Initialization failure\n" << e.what() << std::endl );
@@ -166,7 +166,8 @@ int ThreadPool::AssignWork(ThreadJob pthreadJob)
     // adding to queue
     pthreadJob.Id = IdCounter++;
     WorkerQueue.push_back(pthreadJob);
-    THREAD_DIAGNOSTIC_PRINT(  "Assigning Worker[" << (pthreadJob).Id << "] Address:[" << &pthreadJob << "] to Queue " << std::endl );
+    THREAD_DIAGNOSTIC_PRINT(
+      "Assigning Worker[" << (pthreadJob).Id << "] Address:[" << &pthreadJob << "] to Queue " << std::endl );
     pthread_mutex_unlock(&MutexSync);
 
     pthread_mutex_lock(&ActiveThreadMutex);
@@ -212,10 +213,11 @@ bool ThreadPool::WaitForThread(int id)
       pthread_mutex_unlock(&ActiveThreadMutex);
       }
     }
-  catch( std::exception& /*e*/ )
+  catch( std::exception & /*e*/ )
     {
     ExceptionOccured = true;
-    THREAD_DIAGNOSTIC_PRINT(  "Exception occured while waiting for job with id : " << id << std::endl << e.what() << std::endl );
+    THREAD_DIAGNOSTIC_PRINT(
+      "Exception occured while waiting for job with id : " << id << std::endl << e.what() << std::endl );
     }
   return true;
 }
@@ -249,7 +251,8 @@ void ThreadPool::RemoveActiveId(int id)
 {
   try
     {
-    THREAD_DIAGNOSTIC_PRINT(  std::endl << "ActiveThreadids size : " << ActiveThreadIds.size() << ". Removing id " << id << std::endl );
+    THREAD_DIAGNOSTIC_PRINT(
+      std::endl << "ActiveThreadids size : " << ActiveThreadIds.size() << ". Removing id " << id << std::endl );
     pthread_mutex_lock(&ActiveThreadMutex);
     int index = -1;
     THREAD_DIAGNOSTIC_PRINT(  std::endl << "Looping" << std::endl );
@@ -266,7 +269,9 @@ void ThreadPool::RemoveActiveId(int id)
     if( index >= 0 )
       {
       ActiveThreadIds.erase(ActiveThreadIds.begin() + index);
-      THREAD_DIAGNOSTIC_PRINT(  std::endl << "Removed id " << id << " from ActiveThreadIds. Now vector size is " << ActiveThreadIds.size() << std::endl );
+      THREAD_DIAGNOSTIC_PRINT(
+        std::endl << "Removed id " << id << " from ActiveThreadIds. Now vector size is " << ActiveThreadIds.size()
+                  << std::endl );
       }
     else
       {
@@ -291,11 +296,14 @@ void ThreadPool::RemoveActiveId(int id)
       }
 
     WorkerQueue.erase(WorkerQueue.begin() + delIndex);
-    THREAD_DIAGNOSTIC_PRINT(  std::endl << "Removed index " << delIndex << " from WorkerQueue. Now vector size is " << WorkerQueue.size() << std::endl );
+    THREAD_DIAGNOSTIC_PRINT(
+      std::endl << "Removed index " << delIndex << " from WorkerQueue. Now vector size is " << WorkerQueue.size()
+                << std::endl );
     pthread_mutex_unlock(&MutexSync);
     if( foundToDelete == false )
       {
-      THREAD_DIAGNOSTIC_PRINT(  std::endl << "Error occured, couldnt find id in WorkerQueue to mark executed. Id is : " << id << std::endl );
+      THREAD_DIAGNOSTIC_PRINT(
+        std::endl << "Error occured, couldnt find id in WorkerQueue to mark executed. Id is : " << id << std::endl );
       throw "Error occured in RemoveActiveId, couldnt find id in WorkerQueue to mark executed. ";
       }
     }
@@ -310,7 +318,7 @@ void * ThreadPool::ThreadExecute(void *param)
 {
   // get the parameters passed in
   ThreadPool *pThreadPool = (ThreadPool *)param;
-  int          s = pthread_setcancelstate(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+  int         s = pthread_setcancelstate(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
   if( s != 0 )
     {
@@ -334,7 +342,7 @@ void * ThreadPool::ThreadExecute(void *param)
       pThreadPool->IncompleteWork--;
       pthread_mutex_unlock( &(pThreadPool)->MutexWorkCompletion);
       }
-    catch( std::exception& /*e*/ )
+    catch( std::exception & /*e*/ )
       {
       pThreadPool->ExceptionOccured = true;
       THREAD_DIAGNOSTIC_PRINT(  "Exception occured in thread execution\n" << e.what() << std::endl );

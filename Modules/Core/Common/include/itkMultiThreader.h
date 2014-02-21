@@ -51,14 +51,14 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT MultiThreader:public Object
+class ITKCommon_EXPORT MultiThreader : public Object
 {
 public:
   /** Standard class typedefs. */
-  typedef MultiThreader              Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  typedef MultiThreader            Self;
+  typedef Object                   Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -135,7 +135,8 @@ public:
 #ifdef ThreadInfoStruct
 #undef ThreadInfoStruct
 #endif
-  struct ThreadInfoStruct {
+  struct ThreadInfoStruct
+    {
     ThreadIdType ThreadID;
     ThreadIdType NumberOfThreads;
     int *ActiveFlag;
@@ -143,8 +144,8 @@ public:
     void *UserData;
     ThreadFunctionType ThreadFunction;
     enum { SUCCESS, ITK_EXCEPTION, ITK_PROCESS_ABORTED_EXCEPTION, STD_EXCEPTION, UNKNOWN } ThreadExitCode;
-  };
-  ThreadPool& Threadpool;
+    };
+  ThreadPool & Threadpool;
   ThreadPoolFactory Threadpoolfactory;
 protected:
   MultiThreader();
@@ -152,8 +153,8 @@ protected:
   void PrintSelf(std::ostream & os, Indent indent) const;
 
 private:
-  MultiThreader(const Self &);  //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
+  MultiThreader(const Self &);  // purposely not implemented
+  void operator=(const Self &); // purposely not implemented
 
   /** An array of thread info containing a thread id
    *  (0, 1, 2, .. ITK_MAX_THREADS-1), the thread count, and a pointer

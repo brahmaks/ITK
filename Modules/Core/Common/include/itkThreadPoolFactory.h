@@ -21,8 +21,6 @@
 #ifndef __ThreadPoolFactory_h
 #define __ThreadPoolFactory_h
 
-
-
 #ifdef __linux__
 #include "itkPThreadPool.h"
 #elif _WIN32
@@ -31,16 +29,14 @@
 #include "itkWinThreadPool.h"
 #endif
 
-
-
 namespace itk
 {
 
 class ThreadPoolFactory
 {
-   public:
-   ThreadPool& GetThreadPool(int maxThreads);
-   
+public:
+  ThreadPool & GetThreadPool(int maxThreads);
+
 };
 }
 #endif

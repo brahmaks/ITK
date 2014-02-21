@@ -55,8 +55,7 @@ int main(int argc, char *argv[])
       numThreadsInThreadPool = atoi(argv[1]);
       }
     std::cout << "Testing itkPthreadPool. Num of threads :" << numThreadsInThreadPool << std::endl;
-	WinThreadPool & myPool = WinThreadPool::GetPoolInstance(numThreadsInThreadPool);
-
+    WinThreadPool & myPool = WinThreadPool::GetPoolInstance(numThreadsInThreadPool);
     // assign work
     for( unsigned int i = 0; i < ITERATIONS; i++ )
       {
@@ -92,3 +91,4 @@ int main(int argc, char *argv[])
     }
   return 0;
 }
+

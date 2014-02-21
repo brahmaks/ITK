@@ -21,15 +21,14 @@
 #ifndef __itkWinThreadPool_h
 #define __itkWinThreadPool_h
 
-#if defined (_WIN32) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
 #include <iostream>
 #include <vector>
- #include "itkObject.h"
+#include "itkObject.h"
 #include "itkObjectFactory.h"
 #include "itkWinJob.h"
-#include"itkThreadPoolDebug.h"
-
+#include "itkThreadPoolDebug.h"
 
 namespace itk
 {
@@ -39,7 +38,7 @@ class ITKCommon_EXPORT ThreadPool : public Object
 public:
 
   /** Standard class typedefs. */
-  typedef ThreadPool              Self;
+  typedef ThreadPool               Self;
   typedef Object                   Superclass;
   typedef SmartPointer<Self>       Pointer;
   typedef SmartPointer<const Self> ConstPointer;
@@ -74,22 +73,23 @@ private:
   static bool InstanceFlag;
   ThreadPool(ThreadPool const &);              // copy constructor is private
   ThreadPool & operator=(ThreadPool const &);  // assignment operator is
-                                                 // private
+
+  // private
 
   void RemoveActiveId(int id);
 
-  int                     MaxThreads;
-  HANDLE                  WorkAvailable; //semaphore
+  int                 MaxThreads;
+  HANDLE              WorkAvailable;     // semaphore
   std::vector<WinJob> WorkerQueue;
-  std::vector<int>        ActiveThreadIds;
-  int                     IncompleteWork;
-  int                     QueueSize;
-  int                     IdCounter;
-  bool                    ExceptionOccured;
-  HANDLE*				  ThreadHandles;
-  static HANDLE  MutexSync; //mutex
-  static HANDLE  ActiveThreadMutex; //mutex
-  static HANDLE  MutexWorkCompletion; //mutex
+  std::vector<int>    ActiveThreadIds;
+  int                 IncompleteWork;
+  int                 QueueSize;
+  int                 IdCounter;
+  bool                ExceptionOccured;
+  HANDLE*             ThreadHandles;
+  static HANDLE       MutexSync;           // mutex
+  static HANDLE       ActiveThreadMutex;   // mutex
+  static HANDLE       MutexWorkCompletion; // mutex
 
   WinJob FetchWork();
 

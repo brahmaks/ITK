@@ -20,7 +20,7 @@
 
 #include "itkThreadPoolFactory.h"
 
-#include"itkThreadPoolDebug.h"
+#include "itkThreadPoolDebug.h"
 
 #ifdef __linux__
 #include "itkPThreadPool.cxx"
@@ -33,12 +33,10 @@
 namespace itk
 {
 
-
-   ThreadPool& ThreadPoolFactory::GetThreadPool(int maxThreads)
-   {
-	return (ThreadPool::GetPoolInstance(maxThreads));
-   }
-   
+ThreadPool & ThreadPoolFactory::GetThreadPool(int maxThreads)
+{
+  return ThreadPool::GetPoolInstance(maxThreads);
 }
 
+}
 
