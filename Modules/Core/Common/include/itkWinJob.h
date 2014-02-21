@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #ifndef __itkWinJob_h
+#if defined(_WIN32) || defined(_WIN64)
 #define __itkWinJob_h
 #include <iostream>
 
@@ -56,4 +57,5 @@ public:
 
 };
 }
+#endif
 #endif
