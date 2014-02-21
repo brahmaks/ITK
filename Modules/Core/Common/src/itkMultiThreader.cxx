@@ -39,8 +39,12 @@
 #endif
 
 
+
+
 namespace itk
 {
+
+
 // Initialize static member that controls global maximum number of threads.
 ThreadIdType MultiThreader:: m_GlobalMaximumNumberOfThreads = ITK_MAX_THREADS;
 
@@ -182,9 +186,10 @@ ThreadIdType MultiThreader::GetGlobalDefaultNumberOfThreads()
 // Constructor. Default all the methods to NULL. Since the
 // ThreadInfoArray is static, the ThreadIDs can be initialized here
 // and will not change.
-MultiThreader::MultiThreader()
+//MultiThreader::MultiThreader() : Threadpool(ThreadPool::GetPoolInstance(GetGlobalDefaultNumberOfThreads()*2))
+MultiThreader::MultiThreader() : Threadpool(Threadpoolfactory.GetThreadPool(GetGlobalDefaultNumberOfThreads()*2))
 {
-  for ( ThreadIdType i = 0; i < ITK_MAX_THREADS; i++ )
+  for ( ThreadIdType i = 0; i < ITK_MAX_THREADS; ++i )
     {
     m_ThreadInfoArray[i].ThreadID           = i;
     m_ThreadInfoArray[i].ActiveFlag         = 0;
@@ -204,7 +209,9 @@ MultiThreader::MultiThreader()
 }
 
 MultiThreader::~MultiThreader()
-{}
+{
+   // PThreadPool::deleteInstance();
+}
 
 // Set the user defined method that will be run on NumberOfThreads threads
 // when SingleMethodExecute is called.
@@ -235,7 +242,7 @@ void MultiThreader::SetMultipleMethod(ThreadIdType index, ThreadFunctionType f, 
 // Execute the method set as the SingleMethod on NumberOfThreads threads.
 void MultiThreader::SingleMethodExecute()
 {
-  ThreadIdType                 thread_loop = 0;
+  ThreadIdType        thread_loop = 0;
   ThreadProcessIDType process_id[ITK_MAX_THREADS];
 
   if ( !m_SingleMethod )
@@ -292,7 +299,7 @@ void MultiThreader::SingleMethodExecute()
     m_ThreadInfoArray[0].NumberOfThreads = m_NumberOfThreads;
     m_SingleMethod( (void *)( &m_ThreadInfoArray[0] ) );
     }
-  catch ( ProcessAborted & excp )
+  catch ( ProcessAborted & )
     {
     // Need cleanup and rethrow ProcessAborted
     // close down other threads
@@ -306,7 +313,7 @@ void MultiThreader::SingleMethodExecute()
               {}
       }
     // rethrow
-    throw &excp;
+    throw;
     }
   catch ( std::exception & e )
     {

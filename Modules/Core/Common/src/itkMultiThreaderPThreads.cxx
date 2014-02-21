@@ -26,6 +26,7 @@
  *
  *=========================================================================*/
 #include "itkMultiThreader.h"
+
 #include "itkObjectFactory.h"
 #include "itksys/SystemTools.hxx"
 #include <unistd.h>
@@ -34,6 +35,7 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #endif
+
 
 namespace itk
 {
@@ -76,7 +78,6 @@ ThreadIdType MultiThreader::GetGlobalDefaultNumberOfThreadsByPlatform()
 
 void MultiThreader::MultipleMethodExecute()
 {
-  ThreadIdType thread_loop;
 
   pthread_t process_id[ITK_MAX_THREADS];
 
@@ -86,7 +87,7 @@ void MultiThreader::MultipleMethodExecute()
     m_NumberOfThreads = m_GlobalMaximumNumberOfThreads;
     }
 
-  for ( thread_loop = 0; thread_loop < m_NumberOfThreads; thread_loop++ )
+  for ( ThreadIdType thread_loop = 0; thread_loop < m_NumberOfThreads; ++thread_loop )
     {
     if ( m_MultipleMethod[thread_loop] == (ThreadFunctionType)0 )
       {
@@ -114,7 +115,7 @@ void MultiThreader::MultipleMethodExecute()
   pthread_attr_setscope(&attr, PTHREAD_SCOPE_PROCESS);
 #endif
 
-  for ( thread_loop = 1; thread_loop < m_NumberOfThreads; thread_loop++ )
+  for ( ThreadIdType thread_loop = 1; thread_loop < m_NumberOfThreads; ++thread_loop )
     {
     m_ThreadInfoArray[thread_loop].UserData =
       m_MultipleData[thread_loop];
@@ -136,7 +137,7 @@ void MultiThreader::MultipleMethodExecute()
 
   // The parent thread has finished its method - so now it
   // waits for each of the other processes to exit
-  for ( thread_loop = 1; thread_loop < m_NumberOfThreads; thread_loop++ )
+  for ( ThreadIdType thread_loop = 1; thread_loop < m_NumberOfThreads; ++thread_loop )
     {
     pthread_join(process_id[thread_loop], 0);
     }
@@ -217,11 +218,20 @@ MultiThreader
 ::WaitForSingleMethodThread(ThreadProcessIDType threadHandle)
 {
   // Using POSIX threads
-  if ( pthread_join(threadHandle, 0) )
+ /* if ( pthread_join(threadHandle, 0) )
     {
     itkExceptionMacro(<< "Unable to join thread.");
     }
+
+*/
+//We are now using thread pool
+    pthread_t threadId = threadHandle;
+    THREAD_DIAGNOSTIC_PRINT( std::endl<<"For wait : threadid :"<<threadId<<std::endl );
+    Threadpool.WaitForThread(threadId);
+
+
 }
+
 
 ThreadProcessIDType
 MultiThreader
@@ -229,22 +239,39 @@ MultiThreader
 {
   // Using POSIX threads
   pthread_attr_t attr;
-  pthread_t      threadHandle;
+//  pthread_t      threadHandle;
 
   pthread_attr_init(&attr);
 #if !defined( __CYGWIN__ )
   pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 #endif
 
+  /*
+  //Using thread pool to spawn threadsl
+
   int threadError;
   threadError =
     pthread_create( &threadHandle, &attr, reinterpret_cast< c_void_cast >( this->SingleMethodProxy ),
                     reinterpret_cast< void * >( threadInfo ) );
+  */
+  //int threadId = (int)threadInfo->ThreadID;
+
+  ThreadJob threadJob;
+  threadJob.ThreadFunction =  reinterpret_cast< c_void_cast >(this->SingleMethodProxy) ;
+  threadJob.ThreadArgs.otherArgs = (void *) threadInfo;
+  int id = Threadpool.AssignWork(threadJob);
+
+/*
+ //thread pool will handle errors
   if ( threadError != 0 )
     {
     itkExceptionMacro(<< "Unable to create a thread.  pthread_create() returned "
                       << threadError);
     }
-  return threadHandle;
+
+*/
+  THREAD_DIAGNOSTIC_PRINT( std::endl<<"Returning thread id :"<<id );
+  return (pthread_t)id;
+
 }
 } // end namespace itk

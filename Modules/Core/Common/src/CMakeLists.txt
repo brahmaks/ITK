@@ -78,6 +78,7 @@ itkStoppingCriterionBase.cxx
 itkCompensatedSummation.cxx
 itkArrayOutputSpecialization.cxx
 itkNumberToString.cxx
+itkThreadPoolFactory.cxx
 )
 
 if(WIN32)

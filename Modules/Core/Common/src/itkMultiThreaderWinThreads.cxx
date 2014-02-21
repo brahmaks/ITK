@@ -182,15 +182,23 @@ void
 MultiThreader
 ::WaitForSingleMethodThread(ThreadProcessIDType threadHandle)
 {
+	/*
   // Using _beginthreadex on a PC
   WaitForSingleObject(threadHandle, INFINITE);
   CloseHandle(threadHandle);
+  
+  */
+//We are now using thread pool
+    int threadId = (int)threadHandle;
+    THREAD_DIAGNOSTIC_PRINT( std::endl<<"For wait : threadid :"<<threadId<<std::endl );
+    Threadpool.WaitForThread(threadId);
 }
 
 ThreadProcessIDType
 MultiThreader
 ::DispatchSingleMethodThread(MultiThreader::ThreadInfoStruct *threadInfo)
 {
+	  /*
   // Using _beginthreadex on a PC
   DWORD  threadId;
   HANDLE threadHandle =  (HANDLE)_beginthreadex(0, 0,
@@ -201,5 +209,30 @@ MultiThreader
     itkExceptionMacro("Error in thread creation !!!");
     }
   return threadHandle;
+  
+  
+
+
+  //Using thread pool to spawn threadsl
+
+  */
+  WinJob threadJob;
+  threadJob.ThreadFunction =  ( unsigned int (__stdcall *)(void *))(this->SingleMethodProxy) ;
+  threadJob.ThreadArgs.otherArgs = (void *) threadInfo;
+  int id = Threadpool.AssignWork(threadJob);
+
+/*
+ //thread pool will handle errors
+  if ( threadError != 0 )
+    {
+    itkExceptionMacro(<< "Unable to create a thread.  pthread_create() returned "
+                      << threadError);
+    }
+
+*/
+  THREAD_DIAGNOSTIC_PRINT( std::endl<<"Returning thread id :"<<id );
+std::cout<< std::endl<<"Returning thread id :"<<id ;
+  return (HANDLE)id;
+  
 }
 } // end namespace itk
