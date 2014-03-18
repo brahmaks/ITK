@@ -35,8 +35,18 @@ namespace itk
 
 ThreadPool & ThreadPoolFactory::GetThreadPool(int maxThreads)
 {
+  THREAD_DIAGNOSTIC_PRINT("Creating thread pool with #threads = "<<maxThreads<<std::endl);
   return ThreadPool::GetPoolInstance(maxThreads);
 }
+
+SmartPointer<ThreadPool> ThreadPoolFactory::GetSmartThreadPool(int maxThreads)
+{
+  THREAD_DIAGNOSTIC_PRINT("Creating (smart)thread pool with #threads = "<<maxThreads<<std::endl);
+  return ThreadPool::GetSmartPoolInstance(maxThreads);
+}
+
+
+
 
 }
 

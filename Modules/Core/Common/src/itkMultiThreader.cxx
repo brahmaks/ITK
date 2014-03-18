@@ -181,7 +181,7 @@ ThreadIdType MultiThreader::GetGlobalDefaultNumberOfThreads()
 // and will not change.
 // MultiThreader::MultiThreader() :
 // Threadpool(ThreadPool::GetPoolInstance(GetGlobalDefaultNumberOfThreads()*2))
-MultiThreader::MultiThreader() : Threadpool(Threadpoolfactory.GetThreadPool(GetGlobalDefaultNumberOfThreads() * 2) )
+MultiThreader::MultiThreader() : m_Threadpool(m_Threadpoolfactory.GetSmartThreadPool(GetGlobalDefaultNumberOfThreads() * 2) )
 {
   for( ThreadIdType i = 0; i < ITK_MAX_THREADS; ++i )
     {

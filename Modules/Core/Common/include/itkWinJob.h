@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #ifndef __itkWinJob_h
-#if defined(_WIN32) || defined(_WIN64)
 #define __itkWinJob_h
+#if defined(_WIN32) || defined(_WIN64)
 #include <iostream>
 
 #include "itkThreadPoolDebug.h"
@@ -45,8 +45,13 @@ public:
   unsigned int ( __stdcall *ThreadFunction )( void * ptr );
 
   ThreadArgs ThreadArgs;
-  WinJob() : Assigned(false)
+  WinJob() : Assigned(false),
+             Id(-1),
+	     Executed(false),
+ 	     Ptid(-1),
+	     UserData(NULL)
   {
+    ThreadArgs.otherArgs = NULL;
     THREAD_DIAGNOSTIC_PRINT(  "Starting thread \t address=" << this << std::endl );  
   }
 

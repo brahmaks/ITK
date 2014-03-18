@@ -121,6 +121,14 @@ public:
   /** Terminate the thread that was created with a SpawnThreadExecute() */
   void TerminateThread(ThreadIdType thread_id);
 
+  /** Set the ThreadPool used by this MultiThreader. If not set, 
+    * the default ThreadPool will be used. Currently ThreadPool 
+    * is only used in SingleMethodExecute. */
+  itkSetObjectMacro(Threadpool, ThreadPool);
+  
+  /** Get the ThreadPool used by this MultiThreader */
+  itkGetObjectMacro(Threadpool, ThreadPool);
+
   /** This is the structure that is passed to the thread that is
    * created from the SingleMethodExecute, MultipleMethodExecute or
    * the SpawnThread method. It is passed in as a void *, and it is up
@@ -145,8 +153,7 @@ public:
     ThreadFunctionType ThreadFunction;
     enum { SUCCESS, ITK_EXCEPTION, ITK_PROCESS_ABORTED_EXCEPTION, STD_EXCEPTION, UNKNOWN } ThreadExitCode;
     };
-  ThreadPool & Threadpool;
-  ThreadPoolFactory Threadpoolfactory;
+
 protected:
   MultiThreader();
   ~MultiThreader();
@@ -155,6 +162,11 @@ protected:
 private:
   MultiThreader(const Self &);  // purposely not implemented
   void operator=(const Self &); // purposely not implemented
+
+  //Thread pool instance and factory
+  ThreadPool::Pointer m_Threadpool;
+  //ThreadPool & m_Threadpool;
+  ThreadPoolFactory m_Threadpoolfactory;
 
   /** An array of thread info containing a thread id
    *  (0, 1, 2, .. ITK_MAX_THREADS-1), the thread count, and a pointer

@@ -36,6 +36,7 @@ HANDLE ThreadPool:: ActiveThreadMutex = CreateMutex(
 
 ThreadPool * ThreadPool:: ThreadPoolInstance = 0;
 bool ThreadPool::         InstanceFlag = false;
+SmartPointer<ThreadPool> ThreadPool:: SThreadPoolInstance = 0;
 
 ThreadPool & ThreadPool::GetPoolInstance()
 {
@@ -57,8 +58,16 @@ ThreadPool & ThreadPool::GetPoolInstance(int maxThreads)
   return *ThreadPoolInstance;
 }
 
+SmartPointer<ThreadPool> ThreadPool::GetSmartPoolInstance(int maxThreads)
+{
+  SThreadPoolInstance = new ThreadPool();
+  SThreadPoolInstance->InitializeThreads(maxThreads);    
+  return SThreadPoolInstance;
+}
+
 ThreadPool::ThreadPool() : IdCounter(1)
 {
+  CompletedJobs = 0;
   InstanceFlag = true;
 }
 
@@ -390,6 +399,11 @@ WinJob ThreadPool::FetchWork()
   return ret;
 }
 
+int ThreadPool::GetCompletedJobs()
+{
+  return CompletedJobs;
+}
+
 void ThreadPool::RemoveActiveId(int id)
 {
   try
@@ -421,6 +435,7 @@ void ThreadPool::RemoveActiveId(int id)
 
         if( index >= 0 )
           {
+	      CompletedJobs++;
           ActiveThreadIds.erase(ActiveThreadIds.begin() + index);
           THREAD_DIAGNOSTIC_PRINT( std::endl << "Removed id " << id << " from ActiveThreadIds. Now vector size is "
                                              << ActiveThreadIds.size() << std::endl);

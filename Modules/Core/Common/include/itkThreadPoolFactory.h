@@ -36,6 +36,7 @@ class ThreadPoolFactory
 {
 public:
   ThreadPool & GetThreadPool(int maxThreads);
+  SmartPointer<ThreadPool> GetSmartThreadPool(int maxThreads);
 
 };
 }

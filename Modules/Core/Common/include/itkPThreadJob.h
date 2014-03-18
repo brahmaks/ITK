@@ -46,8 +46,14 @@ public:
   ThreadArgs ThreadArgs;
 
   ThreadJob() :
-    Assigned(false)
+    Id(-1),
+    Assigned(false),
+    Executed(false),
+    Ptid(-1),
+    UserData(NULL),
+    ThreadHandle(-1)
   {
+    ThreadArgs.otherArgs = NULL;
     THREAD_DIAGNOSTIC_PRINT(  "Starting thread \t address=" << this << std::endl );
   }
 
@@ -62,3 +68,4 @@ public:
 
 #endif
 #endif // __itkPThreadJob_h__
+

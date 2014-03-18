@@ -28,6 +28,7 @@ pthread_mutex_t ThreadPool:: ActiveThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 
 ThreadPool * ThreadPool:: ThreadPoolInstance = 0;
 bool ThreadPool::         InstanceFlag = false;
+SmartPointer<ThreadPool> ThreadPool:: SThreadPoolInstance = 0;
 
 ThreadPool & ThreadPool::GetPoolInstance()
 {
@@ -49,9 +50,17 @@ ThreadPool & ThreadPool::GetPoolInstance(int maxThreads)
   return *ThreadPoolInstance;
 }
 
+SmartPointer<ThreadPool> ThreadPool::GetSmartPoolInstance(int maxThreads)
+{
+  SThreadPoolInstance = new ThreadPool();
+  SThreadPoolInstance->InitializeThreads(maxThreads);    
+  return SThreadPoolInstance;
+}
+
 ThreadPool::ThreadPool() : IdCounter(1)
 {
   InstanceFlag = true;
+  CompletedJobs = 0;
 }
 
 void ThreadPool::InitializeThreads(int maximumThreads)
@@ -83,7 +92,7 @@ void ThreadPool::InitializeThreads(int maximumThreads)
       THREAD_DIAGNOSTIC_PRINT(  "Thread createdd with ptid :" << ThreadHandles[i] << std::endl );
       }
     }
-  catch( std::exception & /* NOT_USED e */ )
+  catch( std::exception &e  )
     {
     ExceptionOccured = true;
     THREAD_DIAGNOSTIC_PRINT(  std::endl << "Initialization failure\n" << e.what() << std::endl );
@@ -213,7 +222,7 @@ bool ThreadPool::WaitForThread(int id)
       pthread_mutex_unlock(&ActiveThreadMutex);
       }
     }
-  catch( std::exception & /*e*/ )
+  catch( std::exception &e )
     {
     ExceptionOccured = true;
     THREAD_DIAGNOSTIC_PRINT(
@@ -247,6 +256,12 @@ ThreadJob ThreadPool::FetchWork()
   return ret;
 }
 
+
+int ThreadPool::GetCompletedJobs()
+{
+  return CompletedJobs;
+}
+
 void ThreadPool::RemoveActiveId(int id)
 {
   try
@@ -269,6 +284,8 @@ void ThreadPool::RemoveActiveId(int id)
     if( index >= 0 )
       {
       ActiveThreadIds.erase(ActiveThreadIds.begin() + index);
+      //increase the count of jobs completed
+      CompletedJobs++;	
       THREAD_DIAGNOSTIC_PRINT(
         std::endl << "Removed id " << id << " from ActiveThreadIds. Now vector size is " << ActiveThreadIds.size()
                   << std::endl );
@@ -342,7 +359,7 @@ void * ThreadPool::ThreadExecute(void *param)
       pThreadPool->IncompleteWork--;
       pthread_mutex_unlock( &(pThreadPool)->MutexWorkCompletion);
       }
-    catch( std::exception & /*e*/ )
+    catch( std::exception &e )
       {
       pThreadPool->ExceptionOccured = true;
       THREAD_DIAGNOSTIC_PRINT(  "Exception occured in thread execution\n" << e.what() << std::endl );

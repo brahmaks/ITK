@@ -52,6 +52,8 @@ public:
 
   static ThreadPool & GetPoolInstance(int maxThreads);
 
+  static SmartPointer<ThreadPool> GetSmartPoolInstance(int maxThreads);
+
   static void DeleteInstance();
 
   void DestroyPool(int maxPollSecs);
@@ -62,12 +64,16 @@ public:
 
   bool WaitForThread(int id);
 
+  int GetCompletedJobs();
+
 protected:
 
   ThreadPool();
   ~ThreadPool();
 private:
+  int CompletedJobs;
   bool Destroy;
+  static SmartPointer<ThreadPool> SThreadPoolInstance;
   static ThreadPool * ThreadPoolInstance;
   static bool InstanceFlag;
   ThreadPool(ThreadPool const &);              // copy constructor is private

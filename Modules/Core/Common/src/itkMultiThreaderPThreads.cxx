@@ -225,7 +225,7 @@ MultiThreader
   pthread_t threadId = threadHandle;
 
   THREAD_DIAGNOSTIC_PRINT( std::endl << "For wait : threadid :" << threadId << std::endl );
-  Threadpool.WaitForThread(threadId);
+  m_Threadpool->WaitForThread(threadId);
 
 }
 
@@ -256,7 +256,7 @@ MultiThreader
   ThreadJob threadJob;
   threadJob.ThreadFunction =  reinterpret_cast<c_void_cast>(this->SingleMethodProxy);
   threadJob.ThreadArgs.otherArgs = (void *) threadInfo;
-  int id = Threadpool.AssignWork(threadJob);
+  int id = m_Threadpool->AssignWork(threadJob);
 
 /*
  //thread pool will handle errors

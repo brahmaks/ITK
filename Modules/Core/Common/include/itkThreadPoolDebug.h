@@ -22,9 +22,9 @@
 #define __ThreadPoolDebug_h
 
 #if 1
-#define THREAD_DIAGNOSTIC_PRINT( themessage )
-#else
 #define THREAD_DIAGNOSTIC_PRINT( themessage ) std::cout << themessage
+#else
+#define THREAD_DIAGNOSTIC_PRINT( themessage ) 
 #endif
 
 #endif
